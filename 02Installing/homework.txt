@@ -3,17 +3,66 @@ Homework for Chapter 2 of Learning MySQL (2006 edition), from p. 94:
 Exercises:
 1) What is command completion?
 
+- Use tab to get suggested completions of the name of command, directory, or file as you are typing in the terminal.
+- Use up and down arrow keys to cycle through past commands. You may edit one of the previous comands and hit Enter to run.
+- Use history command to see list of recent used commands and run appropriatly chosen past command by typing exclamation mark (!) followed by command number.
+
 2) What are the relative advantages of installing MySQL using the package,
  directory archive (tarball or "no-install", or compiled methods?
 
+Binary Package (dmg format):
+- Allows you to follow step-by-step installation wizard.
+- Includes other tools and applications that help with congifuration, work with MySQL
+- Tested and used by a larger community of people.
+
+Archive (compressed tar files binary distribution):
+- Allows you to simply drop-in an installation of mysql in a desired location.
+- You do not need  administator privileges.
+- Avoids changes that the installer package makes to your computer's configuration.
+- Allows you to get more up-to-date releases that may not have been pacakged yet.
+
+Download the sourse code and compile it yourself:
+- Access to the most current version of the software.
+- Allows to optimize the compiler output for your needs/envoronment, resulting in a better pefrormance.
+
 3) How do you verify the integrity of downloaded packages?
 
+- By comparing MD5 checksum of the downloaded file to a number posted on the MySQL download page.
+
 4) How do you add the MySQL bin directory to the operating system path?
+
+-After installing MAMP type these commands in the Terminal window (For  Mac OS X 10.5 or later):
+Machine:~ user$ sudo su 
+Password: (type your password) 
+sh-3.2# echo '/Applications/MAMP/Library/bin' >> /etc/paths.d/MAMP 
+sh-3.2# exit
 
 Additional Exercises (not in the book): 
 1) Document how you installed MySQL and any issues you came across with installation. 
  (The goal is to be easy to install it again on a similar machine.)
 
+- Download the latest version from the MAMP web site (www.mamp.info/en/). You want the free MAMP, not the commercial MAMP PRO.
+- After downloading the file, double-click it to unzip the installer. Then double-click it to launch the MAMP Installer.
+- During the installation, you'll be prompted to choose whether or not to perform a standard installation. At this step, instead of clicking the Install button, click Customize. This will give you the opportunity to deselect MAMP PRO.
+- Browse to your Applications folder and find the new MAMP folder there. Open it, and double-click the MAMP icon inside to launch MAMP.
+- First, the MAMP window will appear. Click "Start Servers". The two status indicators will switch from red to green as the built-in Apache and MySQL servers start up. Next, MAMP will open your default web browser and load the MAMP welcome page. If you see this page it means your web server is up and running.
+- Check settings for Apache and MySQL ports in MAMP window > Preferences > Ports. Apache will use port 80 and MySQL will use port 3306.
+- Switch ON PHP error display in Applications/MAMP/bin/php/version of PHP/conf/php.ini file.
+- Set your MySQL root password in MAMP.
+cd /Applications/MAMP/Library/bin/
+./mysqladmin -u root -p password "newpassword"
+When you hit Enter you’ll be prompted to enter the current password: root.
+- MAMP itself needs unrestricted access to your MySQL server so that it can control it. So changing password in MAMP:
+/Applications/MAMP/bin/mamp/index.php
+/Applications/MAMP/bin/phpMyAdmin/config.inc.php
+/Applications/MAMP/bin/checkMysql.sh
+/Applications/MAMP/bin/quickCheckMysqlUpgrade.sh
+/Applications/MAMP/bin/repairMysql.sh
+/Applications/MAMP/bin/stopMysql.sh
+/Applications/MAMP/bin/upgradeMysql.sh
+
 2) Document where important files should be.
+
+/Applications/MAMP
 
 Do not forget to do a pull request when your homework is complete.
