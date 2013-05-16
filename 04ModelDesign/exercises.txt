@@ -1,12 +1,22 @@
 1. When would you use a weak entity?
 
+- For entities that are dependent on other entities. Weak entity has meaning only in context of its owning (strong) entity and is uniquely identified by the combination of its own key with the key of its owning entity. 
 
 2. Is it better to use entities instead of attributes?
 
+- Item of direct interest to database should be entity, and information that describes them should be stored in attributes.
+
+- If item has components of its own and we need a way of representing its components, then this item should be an entity.
+
+- If object has multiple instances and we need a way to store data on each instance, then this object should be a separate entity.
+
+- If object often non-existent or unknown and is effectively an attribute of only some of the entities, it should be a separate entity rather than an attribute that is often empty.
 
 3. Alter and extend the music database ER model so that it can store 
 compilations, where a compilation is an album that contains tracks by two 
 or more different artists. Explain what you changed and why.
+
+/04ModelDesign/music-er-diagram.jpg
 
 4. Create an ER diagram for an online media store and explain your choices (e.g. why did you make X an entity and Y a relationship) using the following requirements:
  - There are two types of product: music CDs and video DVDs.
@@ -62,3 +72,7 @@ The .odg file was created on Open Office, but all compatibile programs can be se
 http://www.fileinfo.com/extension/odg
 
 Or you can just hand-draw diagrams for questions 3 and 4 and take a picture, as in the Diagram4_11.jpg file.
+
+version 1: /04ModelDesign/media-store-er-diagram1.png
+version 2: /04ModelDesign/media-store-er-diagram2.png
+
