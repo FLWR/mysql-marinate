@@ -22,7 +22,157 @@ in the WHERE. If you put the join clauses in the JOIN part, it's way more readab
 
 1) Use one or more SELECT statements to find out how many tracks are on New Order's Brotherhood album.
 
+***************************************************
+version 1
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
++-----------+
+| artist_id |
++-----------+
+| 1 |
++-----------+
+ 
+mysql> SELECT album_id FROM album WHERE album_name = "Brotherhood";
++----------+
+| album_id |
++----------+
+| 7 |
++----------+
+ 
+mysql> SELECT count(track_id) FROM track WHERE album_id = 7 AND artist_id = 1;
++-----------------+
+| count(track_id) |
++-----------------+
+| 10 |
++-----------------+
+ 
+***************************************************
+version 2
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
+mysql> SELECT album_id FROM album WHERE album_name = "Brotherhood";
+ 
+mysql> SELECT max(track_id)+ 1 FROM track WHERE album_id = 7 AND artist_id = 1;
++-------------------+
+| max(track_id) + 1 |
++-------------------+
+| 10 |
++-------------------+
+ 
+***************************************************
+version 3
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
+mysql> SELECT album_id FROM album WHERE album_name = "Brotherhood";
+ 
+mysql> SELECT max(track_id)+ 1 FROM track WHERE album_id = 7 AND artist_id = 1;
++-------------------+
+| max(track_id) + 1 |
++-------------------+
+| 10 |
++-------------------+
+ 
+***************************************************
+version 4
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
+mysql> SELECT album_id FROM album WHERE album_name = "Brotherhood";
+ 
+mysql> SELECT track_id + 1
+-> FROM track
+-> WHERE album_id = 7 AND artist_id = 1
+-> ORDER BY track_id DESC
+-> LIMIT 1;
++--------------+
+| track_id + 1 |
++--------------+
+| 10 |
++--------------+
+ 
+***************************************************
+version 5
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
+ 
+mysql> SELECT count(track_id)
+-> FROM album INNER JOIN track USING (artist_id, album_id)
+-> WHERE album_name = "Brotherhood" AND artist_id = 1;
+ 
+***************************************************
+version 6
+***************************************************
+mysql> SELECT artist_id FROM artist WHERE artist_name = "New Order";
+ 
+mysql> SELECT count(track_id)
+-> FROM album A INNER JOIN track T ON A.artist_id = T.artist_id AND A.album_id = T.album_id
+-> WHERE album_name = "Brotherhood" AND T.artist_id = 1;
+ 
+***************************************************
+version 7
+***************************************************
+mysql> SELECT count(track_id)
+-> FROM artist
+-> INNER JOIN album USING (artist_id)
+-> INNER JOIN track USING (artist_id, album_id)
+-> WHERE album_id = 7 AND artist_id = 1;
+ 
+***************************************************
+version 8
+***************************************************
+mysql> SELECT count(T.track_id)
+-> FROM artist AR
+-> INNER JOIN album A ON AR.artist_id = A.artist_id
+-> INNER JOIN track T ON A.artist_id = T.artist_id AND A.album_id = T.album_id
+-> WHERE T.album_id = 7 AND T.artist_id = 1;
+ 
+***************************************************
+version 9
+***************************************************
+mysql> SELECT count(track_id)
+-> FROM track
+-> WHERE
+-> album_name IN (SELECT album_id FROM album WHERE album_name = "Brotherhood")
+-> AND
+-> artist_id IN (SELECT artist_id FROM artist WHERE artist_name = "New Order");
+ 
+***************************************************
+ 
 2) Using a join, list the albums that we own by the band New Order
+
+***************************************************
+version 1 - ANSI style. JOIN … USING
+***************************************************
+mysql> SELECT album_name 
+-> FROM artist INNER JOIN album USING (artist_id) 
+-> WHERE artist_name = "New Order"; 
+
++------------------------------------------+
+| album_name                               |
++------------------------------------------+
+| Retro - John McCready FAN                |
+| Substance (Disc 2)                       |
+| Retro - Miranda Sawyer POP               |
+| Retro - New Order / Bobby Gillespie LIVE |
+| Power, Corruption & Lies                 |
+| Substance 1987 (Disc 1)                  |
+| Brotherhood                              |
++------------------------------------------+
+
+***************************************************
+version 2 - ANSI style. JOIN … ON
+***************************************************
+mysql> SELECT album_name 
+-> FROM artist AR INNER JOIN album A ON AR.artist_id = A.artist_id 
+-> WHERE AR.artist_name = "New Order";
+
+***************************************************
+version 3
+***************************************************
+mysql> SELECT album_name 
+-> FROM artist, album 
+-> WHERE artist.artist_id = album.artist_id AND artist_name = "New Order";
+
+***************************************************
 
 3) With INSERT statements, add the artist Leftfield to the database. 
 For this new artist, add the album "Leftism" that has the following tracks:
@@ -41,9 +191,87 @@ l. Bonus Track (Time: 1.22)
 
 The answer to this question should be the INSERT statement(s).
 
+***************************************************
+mysql> SHOW COLUMNS FROM artist;
++-------------+-------------+------+-----+---------+-------+
+| Field       | Type        | Null | Key | Default | Extra |
++-------------+-------------+------+-----+---------+-------+
+| artist_id   | smallint(5) | NO   | PRI | 0       |       |
+| artist_name | char(128)   | YES  |     | NULL    |       |
++-------------+-------------+------+-----+---------+-------+
+
+mysql> SELECT MAX(artist_id) FROM artist;
++----------------+
+| MAX(artist_id) |
++----------------+
+|              6 |
++----------------+
+
+mysql> INSERT INTO artist VALUES (7, "Leftfield");
+
+mysql> SHOW COLUMNS FROM album;
++------------+-------------+------+-----+---------+-------+
+| Field      | Type        | Null | Key | Default | Extra |
++------------+-------------+------+-----+---------+-------+
+| artist_id  | smallint(5) | NO   | PRI | 0       |       |
+| album_id   | smallint(4) | NO   | PRI | 0       |       |
+| album_name | char(128)   | YES  |     | NULL    |       |
++------------+-------------+------+-----+---------+-------+
+
+mysql> SELECT MAX(album_id) FROM album;
++---------------+
+| MAX(album_id) |
++---------------+
+|             7 |
++---------------+
+
+mysql> INSERT INTO album SET artist_id = 7, album_id = 8, album_name = "Leftism";
+
+mysql> SHOW COLUMNS FROM track;
++------------+--------------+------+-----+---------+-------+
+| Field      | Type         | Null | Key | Default | Extra |
++------------+--------------+------+-----+---------+-------+
+| track_id   | smallint(3)  | NO   | PRI | 0       |       |
+| track_name | char(128)    | YES  |     | NULL    |       |
+| artist_id  | smallint(5)  | NO   | PRI | 0       |       |
+| album_id   | smallint(4)  | NO   | PRI | 0       |       |
+| time       | decimal(5,2) | YES  |     | NULL    |       |
++------------+--------------+------+-----+---------+-------+
+
+mysql> INSERT INTO track (track_name, time, track_id, album_id, artist_id)
+    -> VALUES
+    -> ("Release the Pressure", 7.39, 0, 8, 7),
+    -> ("Afro-Melt", 7.33, 1, 8, 7),
+    -> ("Melt", 5.21, 2, 8, 7),
+    -> ("Song of Life", 6.55, 3, 8, 7),
+    -> ("Original", 6.00, 4, 8, 7),
+    -> ("Black Flute", 3.46, 5, 8, 7),
+    -> ("Space Shanty", 7.15, 6, 8, 7),
+    -> ("Inspection Check One", 6.30, 7, 8, 7),
+    -> ("Storm 3000", 5.44, 8, 8, 7),
+    -> ("Open Up", 6.52, 9, 8, 7),
+    -> ("21st Century Poem", 5.42, 10, 8, 7),
+    -> ("Bonus Track", 1.22, 11, 8, 7);
+
+***************************************************
 4) How long in minutes is the Leftism album you added in Question 3? Hint: use the
 SUM() aggregate function.
 
+mysql> SELECT SUM(CAST(time AS TIME)) 
+    -> FROM track JOIN album USING (artist_id, album_id) 
+    -> WHERE artist_id = 7 AND album_id = 8;
++-------------------------+
+| SUM(CAST(time AS TIME)) |
++-------------------------+
+|                   67.99 |
++-------------------------+
+
 5) Change the time for the Original track on the Leftism album to 6.22.
 
+mysql> UPDATE track 
+    -> SET time = 6.22 
+    -> WHERE artist_id = 7 AND album_id = 8 AND track_name = "Original";
+
 6) Remove the 'Bonus Track' from the Leftism album,
+
+mysql> DELETE FROM track WHERE artist_id = 7 AND album_id = 8 AND track_name = "Bonus Track";
